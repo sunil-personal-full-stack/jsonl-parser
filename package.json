@@ -16,12 +16,14 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/node": "^7.25.0",
     "@babel/preset-env": "^7.25.4",
     "babel-loader": "^9.2.1",
     "eslint": "^9.10.0",

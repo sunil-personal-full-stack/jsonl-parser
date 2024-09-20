@@ -1,27 +1,23 @@
-const fs = require('fs');
-const path = require('path');
 const Sequelize = require('sequelize');
-const config = require('../../sequelize.config.js').development;
+let config = require('../../sequelize.config');
+const Product = require('./Product')
+const Variant = require('./Variant')
 
-const sequelize = new Sequelize(config.database, config.username, config.password, config);
+let db = {};
 
-const db = {};
+let sequelize = new Sequelize(config.db);
 
-fs.readdirSync(__dirname)
-    .filter((file) => file !== 'index.js' && file.endsWith('.js'))
-    .forEach((file) => {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-        db[model.name] = model;
-    });
+db = {
+    Product: Product(sequelize),
+    Variant: Variant(sequelize)
+};
 
-// Setup associations
-Object.keys(db).forEach((modelName) => {
+Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) {
         db[modelName].associate(db);
     }
 });
 
 db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
 module.exports = db;

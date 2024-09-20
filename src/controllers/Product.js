@@ -1,32 +1,76 @@
-const { Product, Variant } = require('../models');
+const db = require('../models');
+const logger = require('../helpers/winston')
 
-const getAllProducts = async (req, res) => {
+// Get all products
+exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.findAll({
-            include: [{ model: Variant, as: 'variants' }],
+        const products = await db.Product.findAll({
+            include: [{ model: db.Variant, as: 'variants' }]
         });
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.log(error)
+        logger.error(`Error fetching products: ${error.message}`, error)
+        res.status(500).json({ error: 'Error fetching products' });
     }
 };
 
-const getProductById = async (req, res) => {
+// Get product by ID
+exports.getProductById = async (req, res) => {
     try {
-        const product = await Product.findByPk(req.params.id, {
-            include: [{ model: Variant, as: 'variants' }],
+        const product = await db.Product.findByPk(req.params.id, {
+            include: [{ model: db.Variant, as: 'variants' }]
         });
         if (product) {
             res.json(product);
         } else {
-            res.status(404).json({ message: 'Product not found.' });
+            res.status(404).json({ error: 'Product not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        logger.error(`Error fetching product: ${error.message}`, error)
+        res.status(500).json({ error: 'Error fetching product' });
     }
 };
 
-module.exports = {
-    getAllProducts,
-    getProductById,
+// Create a new product
+exports.createProduct = async (req, res) => {
+    try {
+        const product = await db.Product.create(req.body);
+        res.status(201).json(product);
+    } catch (error) {
+        logger.error(`Error creating product: ${error.message}`, error)
+        res.status(500).json({ error: 'Error creating product' });
+    }
+};
+
+// Update a product by ID
+exports.updateProduct = async (req, res) => {
+    try {
+        const product = await db.Product.findByPk(req.params.id);
+        if (product) {
+            await product.update(req.body);
+            res.json(product);
+        } else {
+            res.status(404).json({ error: 'Product not found' });
+        }
+    } catch (error) {
+        logger.error(`Error updating product: ${error.message}`, error)
+        res.status(500).json({ error: 'Error updating product' });
+    }
+};
+
+// Delete a product by ID
+exports.deleteProduct = async (req, res) => {
+    try {
+        const product = await db.Product.findByPk(req.params.id);
+        if (product) {
+            await product.destroy();
+            res.json({ message: 'Product deleted successfully' });
+        } else {
+            res.status(404).json({ error: 'Product not found' });
+        }
+    } catch (error) {
+        logger.error(`Error deleting product: ${error.message}`, error)
+        res.status(500).json({ error: 'Error deleting product' });
+    }
 };
