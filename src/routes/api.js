@@ -5,6 +5,7 @@ const variantController = require('../controllers/Variant');
 const tokenController = require('../controllers/Token');
 const validateProduct = require('../validators/productValidator');
 const validateVariant = require('../validators/variantValidator');
+const authenticateRequest = require('../middleware/authenticateRequest')
 
 const logger = require('../helpers/winston')
 router.use((req, res, next) => {
@@ -15,17 +16,17 @@ router.use((req, res, next) => {
 })
 
 // Product routes
-router.get('/products', productController.getAllProducts);
-router.get('/products/:id', productController.getProductById);
-router.post('/products', validateProduct, productController.createProduct);
-router.put('/products/:id', validateProduct, productController.updateProduct);
-router.delete('/products/:id', productController.deleteProduct);
+router.get('/products', authenticateRequest, productController.getAllProducts);
+router.get('/products/:id', authenticateRequest, productController.getProductById);
+router.post('/products', authenticateRequest, validateProduct, productController.createProduct);
+router.put('/products/:id', authenticateRequest, validateProduct, productController.updateProduct);
+router.delete('/products/:id', authenticateRequest, productController.deleteProduct);
 
 // Variant routes
-router.get('/products/:productId/variants', variantController.getAllVariantsByProductId);
+router.get('/products/:productId/variants', authenticateRequest, variantController.getAllVariantsByProductId);
 router.post('/products/:productId/variants', validateVariant, variantController.createVariant);
-router.put('/variants/:id', validateVariant, variantController.updateVariant);
-router.delete('/variants/:id', variantController.deleteVariant);
+router.put('/variants/:id', authenticateRequest, validateVariant, variantController.updateVariant);
+router.delete('/variants/:id', authenticateRequest, variantController.deleteVariant);
 
 // Token generation route
 router.post('/api/token', tokenController.generateToken);

@@ -3,17 +3,32 @@ const logger = require('../helpers/winston')
 
 // Get all products
 exports.getAllProducts = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+
     try {
-        const products = await db.Product.findAll({
-            include: [{ model: db.Variant, as: 'variants' }]
+        const offset = (page - 1) * limit; // Calculate offset for pagination
+
+        const { count, rows } = await db.Product.findAndCountAll({
+            include: [{ model: db.Variant, as: 'variants' }],
+            limit: parseInt(limit, 10), // Set the limit
+            offset: parseInt(offset, 10) // Set the offset
         });
-        res.json(products);
+
+        // Create a response object with pagination information
+        const response = {
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page, 10),
+            products: rows,
+        };
+
+        res.json(response);
     } catch (error) {
-        console.log(error)
-        logger.error(`Error fetching products: ${error.message}`, error)
+        logger.error(`Error fetching products: ${error.message}`, error);
         res.status(500).json({ error: 'Error fetching products' });
     }
 };
+
 
 // Get product by ID
 exports.getProductById = async (req, res) => {

@@ -75,33 +75,33 @@ This project includes several scripts to facilitate development, building, and m
 
 ### Product Routes
 
-- **GET /products**
+- **GET /api/products**
   - Retrieves a list of all products.
 
-- **GET /products/:id**
+- **GET /api/products/:id**
   - Retrieves details of a specific product by its ID.
 
-- **POST /products**
+- **POST /api/products**
   - Creates a new product. Requires validation through `productValidator`.
 
-- **PUT /products/:id**
+- **PUT /api/products/:id**
   - Updates an existing product by its ID. Requires validation through `productValidator`.
 
-- **DELETE /products/:id**
+- **DELETE /api/products/:id**
   - Deletes a specific product by its ID.
 
 ### Variant Routes
 
-- **GET /products/:productId/variants**
+- **GET /api/products/:productId/variants**
   - Retrieves all variants associated with a specific product identified by `productId`.
 
-- **POST /products/:productId/variants**
+- **POST /api/products/:productId/variants**
   - Creates a new variant for a specified product. Requires validation through `variantValidator`.
 
-- **PUT /variants/:id**
+- **PUT /api/variants/:id**
   - Updates an existing variant by its ID. Requires validation through `variantValidator`.
 
-- **DELETE /variants/:id**
+- **DELETE /api/variants/:id**
   - Deletes a specific variant by its ID.
 
 ### Token Generation Route
@@ -118,14 +118,14 @@ Each request will log its parameters, URL, and body for debugging purposes using
 
 ### Usage
 
-1. Prepare your `products.jsonl` file. Each line should be a valid JSON object representing a product, including variants as an array.
+1. Prepare your `products.jsonl` file. Each line should be a valid JSON object representing a product, including variants as an array. `products.jsonl` file must be placed at root folder
 
 2. Run the migration script:
    ```bash
-   node migrateProducts.js
+   npm run migrate
    ```
 
-The script will start reading the file and processing the records, using up to 3 threads for database operations.
+The script will start reading the file and processing the records, using up to 5 threads for database operations. We can adjust this number for threads and batch size in script at top of script. Script is added to helpers folder
 
 ### Worker Implementation
 
